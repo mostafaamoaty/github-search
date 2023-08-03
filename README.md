@@ -1,46 +1,55 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Project Title
+GitHub Searcher
 
-## Available Scripts
+## Demo link:
+[Github Searcher Demo](https://github-search-seven-chi.vercel.app/)
 
-In the project directory, you can run:
+## Table of Content:
 
-### `npm start`
+- [About The App](#about-the-app)
+- [Technologies](#technologies)
+- [Approach](#approach)
+- [References](#credits)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## About The App
+[Name of project] is an app that ...
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Technologies
 
-### `npm test`
+- React.js
+- TypeScript
+- Redux 
+- Redux Persist
+- React Router
+- Vanilla CSS
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Approach
+I tried to mimic what could be done in a real-life project in terms of project's structure, styling and components' structure in this example project.
 
-### `npm run build`
+**Project Structure**
+The core file structure is set as below
+- **Components**: For core components such as headers, footer & generic components such as badges and cards (design system)
+- **Layouts**: For layout wrappers to structure the core of the page. In my case it acts both a wrapper and a parent that does the necessary logic for other building blocks to render them.
+- **Pages**: Separate entities as 'modules' that contains the parent component of the entity, children components or building blocks and styling sheet for the entity
+- **Redux**: Contains state management logic
+- **Utils**: For any helpers functions and scripts
+- **API**: For all services that use api communication
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**State Management**
+Using redux-persist as required, benefits our case to cache any previous search results making it faster & optimized with less server hits when refetching the same results. With the help of redux-persist and using it as middleware with thunk I choose dictionary as the data structure of the state for both of repositories and users data, where the key is the search keyword (query) and the value is the data that corresponds to this search query (items, total_count of the query..etc). By choosing key,value dictionary makes it more efficient to get previous search results with the complexity of  **O(1)**. 
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**Infinite scroll**
+I choose to implement infinite scroll with vanilla Javascript while for some people it could be easier to use and existing package, just to demonstrate that going for external dependency is not my initial go-to solution
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Routing**
+Entity dropdown acts as a navigator to apply routing concept to mimic a real-world application 
 
-### `npm run eject`
+**HTML & CSS**
+For listing results as cards, I choose grid over flexbox as it was straight forward matching the columns number requirement (2 columns on small screens, 3 for bigger ones) & also straight-forward with balancing cards size (width & height).
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+For loading states, I used skeleton loading state concept to demonstrate that visual stability is very important. Skeletons help reducing layout shifts resulting better CLS (Cumulative Layout Shift) metric thus affecting the overall performance score for the better.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+## References
+- [Redux Docs](https://redux.js.org/introduction/getting-started)
+- [Using Redux-persist with redux-toolkit ](https://blog.logrocket.com/persist-state-redux-persist-redux-toolkit-react/)
