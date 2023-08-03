@@ -6,8 +6,6 @@ import empty from '../../assets/empty.png'
 
 const Users = () => {
     const { users: { currentData: users }, isFetching, error } = useSelector((state: SearchState) => state)
-    console.log(isFetching);
-
 
     return (
         <>

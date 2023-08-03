@@ -4,7 +4,6 @@ import { Repository, SearchState, User } from "../redux/types"
 
 export const saveUserHistory = (dispatch: Function, query: string, users: User[], history: SearchState, currentPage: { users: number }, totalCount: number) => {
     const savedUsers = [...(history.users.history[query]?.data || [])]
-    console.log(users);
 
     dispatch(setUserData([...savedUsers, ...users]))
     dispatch(addUserHistory({
@@ -47,8 +46,6 @@ export const debounceUserFn = async (dispatch: Function, query: string | undefin
 
         setCurrentPage({ ...currentPage, users: currentPage.users + 1 })
         const users: User[] = res.items
-        console.log(res.items);
-
 
         saveUserHistory(dispatch, query.trim().toLowerCase(), users, history, currentPage, totalCount)
 
@@ -56,7 +53,6 @@ export const debounceUserFn = async (dispatch: Function, query: string | undefin
     } catch (e) {
         dispatch(setFetchingStatus(false))
         dispatch(setError('Something went wrong.'))
-        console.log(e);
     }
 }
 
