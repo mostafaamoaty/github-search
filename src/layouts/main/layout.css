@@ -1,0 +1,26 @@
+.main-layout {
+    margin: auto;
+    /* padding: 8px 24px; */
+    max-width: 1000px;
+}
+
+.search-container {
+    display: flex;
+    gap: 16px;
+    width: 50%;
+    margin-bottom: 32px;
+}
+
+.search-container .type {
+    width: 45%;
+}
+
+@media only screen and (max-width: 768px) {
+    .main-layout {
+        margin: auto 24px;
+    }
+
+    .search-container {
+        width: 100%;
+    }
+}

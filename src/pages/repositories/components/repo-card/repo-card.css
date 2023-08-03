@@ -1,0 +1,53 @@
+.avatar {
+    width: auto;
+    max-width: 100px;
+    border-radius: 50%;
+}
+
+.name {
+    margin: 0;
+    font-weight: 600;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.description {
+    font-size: 14px;
+    word-break: break-all;
+}
+
+.tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+
+.repo-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+}
+
+.owner-avatar {
+    max-width: 32px;
+    height: auto;
+    border-radius: 50%;
+}
+
+.statistics-container {
+    display: flex;
+    gap: 16px;
+}
+
+.stat {
+    display: flex;
+    gap: 4px;
+    justify-content: start;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 600;
+}

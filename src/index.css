@@ -5,9 +5,112 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #e2e2e25f;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+
+a {
+  color: black;
+}
+
+/* Button */
+.btn-primary {
+  background-color: #0a0a0a;
+  padding: 8px 16px;
+  border-radius: 12px;
+  color: #ffffff;
+  outline: none;
+  border: none;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background-color: #0a0a0a9b;
+}
+
+.btn-primary:focus,
+.btn-primary:active {
+  outline: 2px solid #e0e0e0;
+}
+
+/* Forms */
+
+input,
+select {
+  min-height: 32px;
+  width: 100%;
+  font-size: 16px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  outline: none;
+  border: 1px solid #e0e0e0;
+  transition: all 0.25s ease;
+}
+
+input:focus,
+select:focus,
+input:active,
+select:active {
+  border: 1px solid #0a0a0a9b;
+
+}
+
+input:hover,
+select:hover {
+  background-color: #fcfcfc9c;
+}
+
+select {
+  cursor: pointer;
+}
+
+/* Skeleton (Shimmering) */
+
+.skeleton {
+  background-color: #e3e3e3;
+  animation: skeleton 1s infinite alternate;
+}
+
+.skeleton.circle {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+}
+
+.skeleton.rect {
+  width: 100%;
+  height: 24px;
+  border-radius: 8px;
+}
+
+@keyframes skeleton {
+  from {
+    opacity: 0.5;
+  }
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 64px;
+}
+
+.empty-state .icon {
+  filter: grayscale(1);
+  margin: auto;
+}
+
+.error-msg {
+  color: red;
 }

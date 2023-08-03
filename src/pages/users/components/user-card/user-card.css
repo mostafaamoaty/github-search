@@ -1,0 +1,12 @@
+.avatar {
+    width: auto;
+    max-width: 100px;
+    border-radius: 50%;
+}
+
+.username {
+    font-weight: 600;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
