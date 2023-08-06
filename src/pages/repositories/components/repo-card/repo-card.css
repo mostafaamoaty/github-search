@@ -46,7 +46,7 @@
 .stat {
     display: flex;
     gap: 4px;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: center;
     font-size: 12px;
     font-weight: 600;
