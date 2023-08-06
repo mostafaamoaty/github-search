@@ -11,7 +11,7 @@ function App() {
       <Routes>
         <Route path='/' element={<MainLayout />} >
           <Route index element={<Users />} />
-          <Route index path='/users' element={<Users />} />
+          <Route path='/users' element={<Users />} />
           <Route path='/repos' element={<Repositories />} />
         </Route>
       </Routes>

@@ -1,11 +1,24 @@
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { SearchState } from "../../redux/types";
+
 import UserCard from "./components/user-card";
-import './users.css'
+
+import { SearchState } from "../../redux/types";
+import { PAGE_SIZE } from "../../utils/search";
+
 import empty from '../../assets/empty.png'
 
+import './users.css'
+
 const Users = () => {
+    const [isInitialLoad, setIsInitialLoad] = useState(true)
+
     const { users: { currentData: users }, isFetching, error } = useSelector((state: SearchState) => state)
+
+    useEffect(() => {
+        if (users && users.length >= PAGE_SIZE) setIsInitialLoad(false)
+        else setIsInitialLoad(true)
+    }, [users])
 
     return (
         <>
@@ -15,8 +28,8 @@ const Users = () => {
                 <p className="error-msg">{error}</p>
             }
             {
-                /* Loading state */
-                isFetching &&
+                /* Loading state (skeleton) */
+                isFetching && isInitialLoad &&
                 <>
                     <div className="users">
                         {Array(30).fill("").map((p, i) => (
@@ -45,11 +58,11 @@ const Users = () => {
             }
             {
                 /* Render results */
-                !isFetching && users && users?.length > 0 &&
+                (!isFetching || (users && users?.length > 0)) &&
                 <>
                     <div className="users">
-                        {users?.map((user) => (
-                            <UserCard user={user} key={user.avatar_url} />
+                        {users?.map((user, index) => (
+                            <UserCard user={user} key={`${index} - ${user.id}`} />
                         ))}
                     </div>
                 </>

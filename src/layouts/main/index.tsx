@@ -1,17 +1,21 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { SearchState } from "../../redux/types"
-import { setFetchingStatus, setReposData, setUserData } from "../../redux/store"
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
 import { debounce } from "lodash"
-import './layout.css'
+
 import Header from "../../components/header"
-import { debounceRepoFn, debounceUserFn } from "../../utils/history"
+
+import { SearchState } from "../../redux/types"
+import { setError, setFetchingStatus, setReposData, setUserData } from "../../redux/store"
+import { getUsers, getRepos } from "../../utils/history"
 import { SearchType } from "../../redux/enums"
 
+import './layout.css'
+import { DEBOUNCE_OFFEST, INFINITE_SCROLL_OFFSET, RATE_LIMIT_RETRY, SEARCH_MIN_CHARS } from "../../utils/search"
+import ScrollTop from "../../components/scroll-top"
+
+
 const MainLayout = () => {
-    const DEBOUNCE_OFFEST = 1500 // milliseconds
-    const SEARCH_MIN_CHARS = 3
 
     const dispatch = useDispatch()
 
@@ -28,8 +32,82 @@ const MainLayout = () => {
     const location = useLocation()
 
 
-    const debounceUserSearch = useCallback(debounce(debounceUserFn, DEBOUNCE_OFFEST), [])
-    const debounceRepoSearch = useCallback(debounce(debounceRepoFn, DEBOUNCE_OFFEST), [])
+    const debounceUserSearch = useCallback(debounce(getUsers, DEBOUNCE_OFFEST), [])
+
+    const debounceRepoSearch = useCallback(debounce(getRepos, DEBOUNCE_OFFEST), [])
+
+    const handleScroll = useCallback((e: any) => {
+        if (history.error) {
+            return;
+        }
+
+        if (history.isFetching) return;
+
+        const currentPosition = window.scrollY + window.innerHeight
+        const bodyHeight = document.body.clientHeight
+        const reachedBottom = bodyHeight - currentPosition < INFINITE_SCROLL_OFFSET
+
+        if (!reachedBottom) return;
+
+        if (type === SearchType.Users) getUsers(dispatch, query, page, setPage, history)
+        else getRepos(dispatch, query, page, setPage, history)
+    }, [dispatch, history, page, query, type])
+
+    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => { setQuery(e.target.value) }
+
+    const handleTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+        const currentType = e.target.value
+        setType(currentType)
+        navigate(`/${currentType}`)
+        const key = query.trim().toLowerCase()
+
+        if (currentType === SearchType.Users) searchUsers(key)
+        else searchRepos(key)
+    }
+
+    const searchUsers = (key: string) => {
+        dispatch(setFetchingStatus(true))
+
+        const userHistory = Object.keys(history.users.history);
+
+        /* Fetch data from API if it's not previously persisted */
+        if (!userHistory.includes(key)) {
+            dispatch(setUserData(undefined))
+            debounceUserSearch(dispatch, query, page, setPage, history)
+            return;
+        }
+
+        // debounceUserSearch(dispatch, undefined, page, setPage, history)
+        dispatch(setUserData(history.users.history[key].data))
+        dispatch(setFetchingStatus(false))
+
+        setPage({
+            ...page,
+            users: (history.users.history[key]?.pages || 0) + 1,
+        })
+    }
+
+    const searchRepos = (key: string) => {
+        dispatch(setFetchingStatus(true))
+
+        const reposHistory = Object.keys(history.repositories.history);
+
+        if (!reposHistory.includes(key)) {
+            dispatch(setReposData(undefined))
+            debounceRepoSearch(dispatch, query, page, setPage, history)
+            return;
+        }
+
+        /* ????????? */
+        debounceRepoSearch(dispatch, undefined, page, setPage, history)
+        dispatch(setReposData(history.repositories.history[key].data))
+        dispatch(setFetchingStatus(false))
+
+        setPage({
+            ...page,
+            repos: (history.repositories.history[key]?.pages || 0) + 1,
+        })
+    }
 
     /* Route change listener for entity type */
     useEffect(() => {
@@ -40,10 +118,10 @@ const MainLayout = () => {
 
     useEffect(() => {
         if (searchRef.current)
-            setQuery(searchRef.current.value)
-        return () => {
-            setQuery("")
-        } /* Clear search value on destroy */
+            // setQuery(searchRef.current.value)
+            return () => {
+                // setQuery("")
+            } /* Clear search value on destroy */
     }, [searchRef.current])
 
 
@@ -69,91 +147,23 @@ const MainLayout = () => {
 
     }, [query])
 
-    const options = {
-        root: null,
-        threshold: 1.0,
-        rootMargin: '0px',
-    }
-
     /* Infinite scroll */
     useEffect(() => {
-        const handleScroll = (e: any) => {
-            if (history.isFetching) return;
-            const offset = 200
-            const currentPosition = window.scrollY + window.innerHeight
-            const bodyHeight = document.body.clientHeight
-            const reachedBottom = bodyHeight - currentPosition < offset
-            if (!reachedBottom) return;
-
-            if (type === SearchType.Users) debounceUserSearch(dispatch, query, page, setPage, history)
-            else debounceRepoSearch(dispatch, query, page, setPage, history)
-
-        }
-
-        if (containerRef.current) {
-            document.addEventListener("scroll", handleScroll)
-        }
+        document.addEventListener("scroll", handleScroll)
 
         return () => {
-            if (containerRef.current) document.removeEventListener("scroll", handleScroll)
+            document.removeEventListener("scroll", handleScroll)
         }
-    }, [containerRef.current, options])
+    }, [handleScroll])
 
-
-    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => { setQuery(e.target.value) }
-    const handleTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
-        const currentType = e.target.value
-        setType(currentType)
-        navigate(`/${currentType}`)
-        const key = query.trim().toLowerCase()
-
-        if (currentType === SearchType.Users) searchUsers(key)
-        else searchRepos(key)
-    }
-
-    const searchUsers = (key: string) => {
-        dispatch(setFetchingStatus(true))
-
-        const userHistory = Object.keys(history.users.history);
-
-        /* Fetch data from API if it's not previously persisted */
-        if (!userHistory.includes(key)) {
-            dispatch(setUserData(undefined))
-            debounceUserSearch(dispatch, query, page, setPage, history)
-            return;
+    /* In case of failed requests, reset error to trigger a retry  */
+    useEffect(() => {
+        if (history.error.length) {
+            setTimeout(() => {
+                dispatch(setError(''))
+            }, RATE_LIMIT_RETRY);
         }
-
-        /* ????????? */
-        debounceUserSearch(dispatch, undefined, page, setPage, history)
-        dispatch(setUserData(history.users.history[key].data))
-        dispatch(setFetchingStatus(false))
-
-        setPage({
-            ...page,
-            users: (history.users.history[key]?.pages || 0) + 1,
-        })
-    }
-
-    const searchRepos = (key: string) => {
-        dispatch(setFetchingStatus(true))
-        const reposHistory = Object.keys(history.repositories.history);
-
-        if (!reposHistory.includes(key)) {
-            dispatch(setReposData(undefined))
-            debounceRepoSearch(dispatch, query, page, setPage, history)
-            return;
-        }
-
-        /* ????????? */
-        debounceRepoSearch(dispatch, undefined, page, setPage, history)
-        dispatch(setReposData(history.repositories.history[key].data))
-        dispatch(setFetchingStatus(false))
-
-        setPage({
-            ...page,
-            repos: (history.repositories.history[key]?.pages || 0) + 1,
-        })
-    }
+    }, [history.error, dispatch])
 
     return (
         <div className="main-layout">
@@ -168,6 +178,7 @@ const MainLayout = () => {
             <div ref={containerRef}>
                 <Outlet />
             </div>
+            <ScrollTop />
         </div>
     )
 }

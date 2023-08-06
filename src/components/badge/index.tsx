@@ -5,7 +5,7 @@ interface BadgeProps {
     color?: string
 }
 
-const Badge = ({ text = "Java" }: BadgeProps) => {
+const Badge: React.FC<BadgeProps> = ({ text }) => {
     return (
         <div className="badge">
             <span>

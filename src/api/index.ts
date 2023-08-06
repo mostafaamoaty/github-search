@@ -1,5 +1,3 @@
-import { Repository, User } from "../redux/types";
-
 const BASE_URL = "https://api.github.com";
 const USERS_API = "/search/users"
 const REPOS_API = "/search/repositories"

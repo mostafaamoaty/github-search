@@ -5,7 +5,7 @@ export interface CardProps {
     children: ReactNode
 }
 
-const Card = ({ children }: CardProps) => {
+const Card: React.FC<CardProps> = ({ children }) => {
     return (
         <div className="card">
             {children}

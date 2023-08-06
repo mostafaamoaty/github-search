@@ -26,7 +26,7 @@ export const saveRepoHistory = (dispatch: Function, query: string, repos: Reposi
     }))
 }
 
-export const debounceUserFn = async (dispatch: Function, query: string | undefined, currentPage: { users: number }, setCurrentPage: Function, history: SearchState) => {
+export const getUsers = async (dispatch: Function, query: string | undefined, currentPage: { users: number }, setCurrentPage: Function, history: SearchState) => {
     const limit = history.users.history[query || '']?.totalCount
     const usersLength = history.users.history[query || '']?.data.length
     const reachedLimit = limit && usersLength && usersLength === limit
@@ -38,8 +38,9 @@ export const debounceUserFn = async (dispatch: Function, query: string | undefin
         return;
     }
 
+    dispatch(setFetchingStatus(true))
+
     try {
-        dispatch(setFetchingStatus(true))
 
         const res = await fetchUsers(query, currentPage.users);
         const totalCount = res.total_count || 0
@@ -51,12 +52,13 @@ export const debounceUserFn = async (dispatch: Function, query: string | undefin
 
         dispatch(setFetchingStatus(false))
     } catch (e) {
+        setCurrentPage({ ...currentPage, users: currentPage.users })
         dispatch(setFetchingStatus(false))
         dispatch(setError('Something went wrong.'))
     }
 }
 
-export const debounceRepoFn = async (dispatch: Function, query: string | undefined, currentPage: { repos: number }, setCurrentPage: Function, history: SearchState) => {
+export const getRepos = async (dispatch: Function, query: string | undefined, currentPage: { repos: number }, setCurrentPage: Function, history: SearchState) => {
     const limit = history.repositories.history[query || '']?.totalCount
     const reposLength = history.repositories.history[query || '']?.data.length
     const reachedLimit = limit && reposLength && reposLength === limit
@@ -67,8 +69,10 @@ export const debounceRepoFn = async (dispatch: Function, query: string | undefin
         dispatch(setFetchingStatus(false))
         return;
     }
+
+    dispatch(setFetchingStatus(true))
+
     try {
-        dispatch(setFetchingStatus(true))
 
         const res = await fetchRepositories(query, currentPage.repos);
         const totalCount = res.total_count || 0
@@ -79,6 +83,9 @@ export const debounceRepoFn = async (dispatch: Function, query: string | undefin
 
         dispatch(setFetchingStatus(false))
     } catch (e) {
+        /* Reset current page in case of failed request to retry the same failed one */
+        setCurrentPage({ ...currentPage, repos: currentPage.repos })
+
         dispatch(setFetchingStatus(false))
         dispatch(setError('Something went wrong.'))
     }

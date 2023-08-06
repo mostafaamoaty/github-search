@@ -1,0 +1,34 @@
+.scroll-top-btn {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    width: 48px;
+
+    outline: none;
+    border: none;
+    border-radius: 50%;
+
+    background-color: #242a2f;
+    color: #ffffff;
+    cursor: pointer;
+
+    visibility: hidden;
+    opacity: 0;
+
+    transition: all 0.25s ease;
+}
+
+.scroll-top-btn.visible {
+    visibility: visible;
+    opacity: 0.5;
+}
+
+.scroll-top-btn.visible:hover {
+    opacity: 1;
+}
