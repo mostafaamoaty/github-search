@@ -4,23 +4,22 @@ import { useDispatch, useSelector } from "react-redux"
 import { debounce } from "lodash"
 
 import Header from "../../components/header"
-
-import { SearchState } from "../../redux/types"
-import { setError, setFetchingStatus, setReposData, setUserData } from "../../redux/store"
-import { getUsers, getRepos } from "../../utils/history"
-import { SearchType } from "../../redux/enums"
-
-import './layout.css'
-import { DEBOUNCE_OFFEST, INFINITE_SCROLL_OFFSET, RATE_LIMIT_RETRY, SEARCH_MIN_CHARS } from "../../utils/search"
 import ScrollTop from "../../components/scroll-top"
 
+import { SearchState } from "../../redux/types"
+import { SearchType } from "../../redux/enums"
+import { setError, setFetchingStatus, setReposData, setUserData } from "../../redux/store"
+import { getUsers, getRepos } from "../../utils/history"
+import { DEBOUNCE_OFFEST, INFINITE_SCROLL_OFFSET, RATE_LIMIT_RETRY, SEARCH_MIN_CHARS } from "../../utils/search"
+
+import './layout.css'
 
 const MainLayout = () => {
 
     const dispatch = useDispatch()
 
     const [query, setQuery] = useState("")
-    const [type, setType] = useState("user")
+    const [type, setType] = useState("users")
     const [page, setPage] = useState({ users: 1, repos: 1 })
 
     const searchRef = useRef<HTMLInputElement>(null)
@@ -118,12 +117,11 @@ const MainLayout = () => {
 
     useEffect(() => {
         if (searchRef.current)
-            // setQuery(searchRef.current.value)
-            return () => {
-                // setQuery("")
-            } /* Clear search value on destroy */
+            setQuery(searchRef.current.value)
+        return () => {
+            setQuery("")
+        } /* Clear search value on destroy */
     }, [searchRef.current])
-
 
     /* Search query changes */
     useEffect(() => {
